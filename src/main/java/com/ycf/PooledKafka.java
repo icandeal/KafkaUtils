@@ -33,17 +33,22 @@ public class PooledKafka implements InitializingBean {
         pool.setMaxWaitMillis(config.containsKey("pool.maxWaitMillis")? Integer.parseInt(config.getProperty("pool.maxWaitMillis")) : 100000);
     }
 
-    public void initPooled() {
-        pool = new GenericObjectPool<KafkaProducer>(new KafkaPooledProducerFactory(config));
-        pool.setMaxIdle(config.containsKey("pool.maxIdle") ? Integer.parseInt(config.getProperty("pool.maxIdle")) : 10);
-        pool.setMaxTotal(config.containsKey("pool.maxTotal") ? Integer.parseInt(config.getProperty("pool.maxTotal")) : 500);
-        pool.setMaxWaitMillis(config.containsKey("pool.maxWaitMillis") ? Integer.parseInt(config.getProperty("pool.maxWaitMillis")) : 100000);
-        pool.setMinIdle(config.containsKey("pool.minIdle") ? Integer.parseInt(config.getProperty("pool.minIdle")) : 3);
-
-    }
-
     public boolean send(String topic, String key, Object value) {
         ProducerRecord<String, Object> record = new ProducerRecord<String, Object>(topic, key, value);
+
+        if (pool != null) {
+            try {
+                pool.borrowObject().send(record);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public boolean send(String topic, Object value) {
+        ProducerRecord<String, Object> record = new ProducerRecord<String, Object>(topic, value);
 
         if (pool != null) {
             try {
@@ -76,7 +81,7 @@ public class PooledKafka implements InitializingBean {
         try {
             Properties config = new Properties();
             config.load(configLocation.getInputStream());
-            this.config = config;
+            initPooled(config);
         } catch (IOException e)  {
             logger.error("Properties Load Error !\n",e);
         }
