@@ -26,8 +26,7 @@ public class KafkaTest {
 
     @Test
     public void doSend(){
-        pooledKafka.send("test", "aa", "sssssss");
-        Assert.assertTrue(true);
+        Assert.assertTrue(pooledKafka.send("test", "fff", "cccc"));
     }
 
     @Test

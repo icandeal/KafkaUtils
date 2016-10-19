@@ -17,10 +17,10 @@ import java.util.Properties;
  */
 public class PooledKafka implements InitializingBean {
     private Logger logger = Logger.getLogger(this.getClass());
-
     private GenericObjectPool<KafkaProducer> pool;
     private Resource configLocation;
     private Properties config;
+    private KafkaProducer producer;
 
     public PooledKafka (){}
 
@@ -38,9 +38,16 @@ public class PooledKafka implements InitializingBean {
 
         if (pool != null) {
             try {
-                pool.borrowObject().send(record);
+                producer = pool.borrowObject();
+                producer.send(record);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(e);
+            } finally {
+                try {
+                    pool.returnObject(producer);
+                } catch (Exception e) {
+                    logger.error(e);
+                }
             }
             return true;
         }
@@ -48,17 +55,7 @@ public class PooledKafka implements InitializingBean {
     }
 
     public boolean send(String topic, Object value) {
-        ProducerRecord<String, Object> record = new ProducerRecord<String, Object>(topic, value);
-
-        if (pool != null) {
-            try {
-                pool.borrowObject().send(record);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return true;
-        }
-        return false;
+        return send(topic, null, value);
     }
 
     public void receive(ConsumerCallback callback, String groupId, List<String> topicList, Long cycle) {
@@ -66,7 +63,7 @@ public class PooledKafka implements InitializingBean {
         KafkaConsumer<String, Object> consumer = new KafkaConsumer<String, Object>(this.config);
         consumer.subscribe(topicList);
         ConsumerThread thread = new ConsumerThread(consumer,callback,cycle);
-        thread.run();
+        thread.start();
     }
 
     public Resource getConfigLocation() {
