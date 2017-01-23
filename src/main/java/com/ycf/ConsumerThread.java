@@ -3,10 +3,12 @@ package com.ycf;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 
+import java.io.Serializable;
+
 /**
  * Created by sniper on 16-10-12.
  */
-public class ConsumerThread extends Thread {
+public class ConsumerThread extends Thread implements Serializable{
 
     private KafkaConsumer consumer;
     private ConsumerCallback callback;

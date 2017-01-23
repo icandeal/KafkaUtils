@@ -5,12 +5,13 @@ import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.kafka.clients.producer.KafkaProducer;
 
+import java.io.Serializable;
 import java.util.Properties;
 
 /**
  * Created by sniper on 16-10-12.
  */
-public class KafkaPooledProducerFactory extends BasePooledObjectFactory<KafkaProducer> {
+public class KafkaPooledProducerFactory extends BasePooledObjectFactory<KafkaProducer> implements Serializable {
     private Properties properties;
 
     public KafkaPooledProducerFactory (Properties properties){

@@ -26,8 +26,16 @@ public class KafkaTest {
 
     @Test
     public void doSend(){
-        pooledKafka.send("test", "aa", "sssssss");
-        Assert.assertTrue(true);
+        int i = 0;
+        while(true) {
+            try {
+                Thread.sleep(2000);
+                pooledKafka.send("aixueOnline", "bbb"+ (i++));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+//            Assert.assertTrue(pooledKafka.send("difficulty", "bbb"));
+        }
     }
 
     @Test
@@ -42,7 +50,7 @@ public class KafkaTest {
                             + " partition:"+record1.partition());
                 }
             }
-        },"test", Arrays.asList("test"), 1000l);
+        },"test", "aixueOnline", 1000l);
         Assert.assertTrue(true);
     }
 }
