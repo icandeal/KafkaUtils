@@ -19,10 +19,10 @@ import java.util.Properties;
  */
 public class PooledKafka implements InitializingBean,Serializable {
     private Logger logger = Logger.getLogger(this.getClass());
-
     private GenericObjectPool<KafkaProducer> pool;
     private Resource configLocation;
     private Properties config;
+    private KafkaProducer producer;
 
     public PooledKafka (){}
 
@@ -54,12 +54,19 @@ public class PooledKafka implements InitializingBean,Serializable {
             try {
                 producer = pool.borrowObject();
                 producer.send(record);
+<<<<<<< HEAD
                 producer.flush();
+=======
+>>>>>>> 61d807a0dbdc35e5b29c4edd896649350dffa7da
             } catch (Exception e) {
                 logger.error(e);
             } finally {
                 try {
+<<<<<<< HEAD
                     this.pool.returnObject(producer);
+=======
+                    pool.returnObject(producer);
+>>>>>>> 61d807a0dbdc35e5b29c4edd896649350dffa7da
                 } catch (Exception e) {
                     logger.error(e);
                 }
@@ -76,6 +83,7 @@ public class PooledKafka implements InitializingBean,Serializable {
     public void receive(ConsumerCallback callback, String groupId, String topic, Long cycle, Integer numPartitions) {
         this.config.setProperty("group.id",groupId);
         KafkaConsumer<String, Object> consumer = new KafkaConsumer<String, Object>(this.config);
+<<<<<<< HEAD
         List<String> topics = new ArrayList<String>();
         topics.add(topic);
         consumer.subscribe(topics);
@@ -88,6 +96,11 @@ public class PooledKafka implements InitializingBean,Serializable {
 
     public void receive(ConsumerCallback callback, String groupId, String topic, Long cycle) {
         receive(callback, groupId, topic, cycle, 1);
+=======
+        consumer.subscribe(topicList);
+        ConsumerThread thread = new ConsumerThread(consumer,callback,cycle);
+        thread.start();
+>>>>>>> 61d807a0dbdc35e5b29c4edd896649350dffa7da
     }
 
     public Resource getConfigLocation() {

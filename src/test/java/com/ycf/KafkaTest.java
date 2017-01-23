@@ -26,6 +26,7 @@ public class KafkaTest {
 
     @Test
     public void doSend(){
+<<<<<<< HEAD
         int i = 0;
         while(true) {
             try {
@@ -36,6 +37,9 @@ public class KafkaTest {
             }
 //            Assert.assertTrue(pooledKafka.send("difficulty", "bbb"));
         }
+=======
+        Assert.assertTrue(pooledKafka.send("test", "fff", "cccc"));
+>>>>>>> 61d807a0dbdc35e5b29c4edd896649350dffa7da
     }
 
     @Test
