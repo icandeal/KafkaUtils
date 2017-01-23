@@ -31,6 +31,7 @@ public class KafkaTest {
             try {
                 Thread.sleep(2000);
                 pooledKafka.send("aixueOnline", "bbb"+ (i++));
+                System.out.println("fffffffff0");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
