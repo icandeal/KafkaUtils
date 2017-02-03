@@ -45,6 +45,17 @@ public class PooledKafka implements InitializingBean,Serializable {
         if(!config.containsKey("value.deserializer")) {
             config.setProperty("value.deserializer","org.apache.kafka.common.serialization.StringDeserializer");
         }
+        if(!config.containsKey("metadata.broker.list") && !config.containsKey("bootstrap.servers")) {
+            logger.error("Missed parameter 'metadata.broker.list' or 'bootstrap.servers'!");
+            logger.error("Kafka utils start failed!");
+            return;
+        }
+        if(!config.containsKey("metadata.broker.list") && config.containsKey("bootstrap.servers")) {
+            config.setProperty("metadata.broker.list",config.getProperty("bootstrap.servers"));
+        }
+        if(!config.containsKey("bootstrap.servers") && config.containsKey("metadata.broker.list")) {
+            config.setProperty("bootstrap.servers",config.getProperty("metadata.broker.list"));
+        }
     }
 
     public boolean send(String topic, String key, Object value) {
